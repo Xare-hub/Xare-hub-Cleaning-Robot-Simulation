@@ -9,16 +9,16 @@ def rand_vel0(robot):
     values, so that the robot starts moving in a different direction at the
     same speed in each run of the simulation
     """
-    MAX_SPEED = 4
+    MAX_SPEED = 20        #pixels per frame
     
     x_speed = np.random.random()*MAX_SPEED*2 - MAX_SPEED
     if np.random.random() < 0.5:
         y_speed = np.sqrt(MAX_SPEED**2 - x_speed**2)
     else:
         y_speed = np.sqrt(MAX_SPEED**2 - x_speed**2) * -1
-
-    robot.x_vel = x_speed
-    robot.y_vel = y_speed
+    vel = [x_speed, y_speed]/norm([x_speed, y_speed])
+    robot.x_vel = vel[0]
+    robot.y_vel = vel[1]
 
 def dist_point2line(P1,P2, P3, verbose = False):
     """
@@ -68,8 +68,8 @@ def detect_line_collision(rob_coordinates, wall_corners, rob_radius):
     NormalizedVec2Wall = NormalVec2Wall / norm(Wall)
 
     # If the norm both vectors to each corner of a wall are smaller than the
-    # norm of the vector that defines the wall, then the ball is colliding with
-    # the wall
+    # norm of the vector that defines the wall, then the ball is capable of
+    # colliding with the wall
 
     if ((norm(vec2corner1) <= norm(Wall) + rob_radius) and (norm(vec2corner2) <= norm(Wall) + rob_radius)):
 
@@ -83,14 +83,18 @@ def detect_line_collision(rob_coordinates, wall_corners, rob_radius):
         
         collision_detected = True
 
-        return [collision_detected, NormalizedVec2Wall]
-    
+        # return [collision_detected, NormalizedVec2Wall]
+        return [collision_detected, NormalizedVec2Wall, d]
+
+
     collision_detected = False
     NormalizedVec2Wall = (0,0)
 
-    return [collision_detected, NormalizedVec2Wall]
+    # return [collision_detected, NormalizedVec2Wall]
+    return [collision_detected, NormalizedVec2Wall, d]
 
-def collision_scan(wall_corners, rob_coordinates, rob_radius, verbose = False):
+
+# def collision_scan(wall_corners, rob_coordinates, rob_radius, robot, verbose = False):
     """
     This function will iterate, at each frame, over all the corners that
     define the walls of the room and obstacles in order to check if a
@@ -100,12 +104,63 @@ def collision_scan(wall_corners, rob_coordinates, rob_radius, verbose = False):
     rob_coordinates is a tuple that contains the robot's position
     rob_radius      is a scalar defining the radius of the robot
     """
+    counter = 0
     for i in range(0, len(wall_corners)-1):
         collision_detected, NormalizedVec2Wall = detect_line_collision(rob_coordinates, (wall_corners[i], wall_corners[i+1]), rob_radius)
+        print(type(collision_detected))
         if collision_detected:
             if verbose:
                 print("Line segment collided:", i+1, NormalizedVec2Wall)
             return [collision_detected, NormalizedVec2Wall]
+        else:
+            counter += 1
+            if counter > 10:
+                robot.recent_collision = False
+                counter = 0
+    return [collision_detected, NormalizedVec2Wall]
+
+rec_col_counter = 0
+
+def collision_scan(wall_corners, rob_coordinates, rob_radius, robot, verbose = False):
+    """
+    This function will iterate, at each frame, over all the corners that
+    define the walls of the room and obstacles in order to check if a
+    collision between the robot and a wall has ocurred.
+    Wall_corners    is an array that contains the coordinates of every
+                    corner in the room
+    rob_coordinates is a tuple that contains the robot's position
+    rob_radius      is a scalar defining the radius of the robot
+    """
+    collisions = []
+    normalized_vectors = []
+    distances = []
+    global rec_col_counter
+    for i in range(0, len(wall_corners)-1):
+        collision_detected, NormalizedVec2Wall, d = detect_line_collision(rob_coordinates, (wall_corners[i], wall_corners[i+1]), rob_radius)
+        collisions.append(collision_detected)
+        normalized_vectors.append(NormalizedVec2Wall)
+        distances.append(d)
+        
+    distances = np.array(distances)
+    min_dist_index = np.argmin(distances)
+
+    collision_detected = collisions[min_dist_index] 
+    NormalizedVec2Wall = normalized_vectors[min_dist_index]
+    
+    if collision_detected:
+        if verbose:
+            print("Line segment collided:", min_dist_index, normalized_vectors[min_dist_index])
+            if min_dist_index == 0:
+                print(distances[min_dist_index:min_dist_index+2])
+            else:
+                print(distances[min_dist_index-1: min_dist_index+2])
+            print(rob_coordinates, robot.x_vel, robot.y_vel, "\n")
+        return [collision_detected, NormalizedVec2Wall]
+    else:
+        rec_col_counter += 1
+        if rec_col_counter > 5:
+            robot.recent_collision = False
+            counter = 0
     return [collision_detected, NormalizedVec2Wall]
         
 
@@ -120,24 +175,26 @@ def robot_collision_handler(robot,NormalizedVec2Wall):
     normalized normal vector.
     from: https://math.stackexchange.com/questions/13261/how-to-get-a-reflection-vector
     """
+
     NormalizedVec2Wall = np.array(NormalizedVec2Wall)
     old_direction = np.array((robot.x_vel, robot.y_vel))
     new_direction = old_direction - 2*np.dot(old_direction, NormalizedVec2Wall)*NormalizedVec2Wall
-
     robot.x_vel = new_direction[0]
     robot.y_vel = new_direction[1]
+    robot.recent_collision = True
+
     
     
 
 
 
 
-collision, normal_vec = collision_scan(WALL_CORNERS, (60,293), 30)
+# collision, normal_vec = collision_scan(WALL_CORNERS, (147,149), 10)
 
 
-# collision, normal_vec = detect_line_collision((300,-300),((400,0),(400,800)), 30)
+# # # collision, normal_vec = detect_line_collision((300,-300),((400,0),(400,800)), 30)
 
-print("")
-print("Collision: ", collision)
-print("")
-print("Collided wall normal vector:", normal_vec)
+# print("")
+# print("Collision: ", collision)
+# print("")
+# print("Collided wall normal vector:", normal_vec)
