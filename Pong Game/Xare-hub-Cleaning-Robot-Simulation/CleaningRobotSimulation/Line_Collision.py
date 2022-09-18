@@ -1,6 +1,6 @@
 import numpy as np
 import pygame
-import helper_functions
+from helper_functions import rand_vel0, collision_scan, robot_collision_handler
 
 
 pygame.init()
@@ -65,7 +65,7 @@ def main():
 
     lines = Line((400,0), (400,800))
     robot = Robot(200,400,10)
-    helper_functions.rand_vel0(robot)
+    rand_vel0(robot)
 
     print(lines)
             
@@ -81,6 +81,11 @@ def main():
                 break
 
         robot.move()
+        collision_detected, Normal_vector = collision_scan([(400,0), (400,800)], (robot.x_center, robot.y_center), robot.radius, robot, verbose = True)
+
+
+        if collision_detected and not(robot.recent_collision):
+            robot_collision_handler(robot, Normal_vector)
     pygame.quit()
 
 
