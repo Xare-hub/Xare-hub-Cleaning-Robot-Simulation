@@ -26,14 +26,17 @@ def main():
     robot = Robot(154, 141, 15)
     rand_vel0(robot) # comment this line to return to random direction each run
     
-    # robot.x_vel = vel[0]
-    # robot.y_vel = vel[1]
-    
+    # uncomment next lines to define a normalized specific direction for the robot
+
     # direction = [-5,5]  #set fixed initial direction
     # f = 2   # change to modify pixels traveled per frame
     # vel = direction/np.linalg.norm(direction)   # get unitary vector with the direction chose   
-    # robot.x_vel = 2
-    # robot.y_vel = 2
+    # robot.x_vel = vel[0]
+    # robot.y_vel = vel[1]
+
+    # uncomment next lines to define a specific direction in terms of the x and y vel components:
+    # robot.x_vel = vel[0]
+    # robot.y_vel = vel[1]
 
     while run:
         clock.tick(FPS)
