@@ -9,7 +9,7 @@ def rand_vel0(robot):
     values, so that the robot starts moving in a different direction at the
     same speed in each run of the simulation
     """
-    MAX_SPEED = 20        #pixels per frame
+    MAX_SPEED = 100        #pixels per frame
     
     x_speed = np.random.random()*MAX_SPEED*2 - MAX_SPEED
     if np.random.random() < 0.5:
@@ -17,8 +17,8 @@ def rand_vel0(robot):
     else:
         y_speed = np.sqrt(MAX_SPEED**2 - x_speed**2) * -1
     vel = [x_speed, y_speed]/norm([x_speed, y_speed])
-    robot.x_vel = vel[0]
-    robot.y_vel = vel[1]
+    robot.x_vel = vel[0]/2
+    robot.y_vel = vel[1]/2
 
 def dist_point2line(P1,P2, P3, verbose = False):
     """
@@ -158,7 +158,7 @@ def collision_scan(wall_corners, rob_coordinates, rob_radius, robot, verbose = F
         return [collision_detected, NormalizedVec2Wall]
     else:
         rec_col_counter += 1
-        if rec_col_counter > 5:
+        if rec_col_counter > 1:
             robot.recent_collision = False
             counter = 0
     return [collision_detected, NormalizedVec2Wall]

@@ -11,7 +11,7 @@ WIDTH, HEIGHT = 800, 800
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Rotated Rectangle")
 
-FPS = 60
+FPS = 800
 
 lines = [Line] * 24
 #Added comment
