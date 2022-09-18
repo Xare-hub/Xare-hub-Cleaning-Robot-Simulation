@@ -1,6 +1,7 @@
 import numpy as np
 from numpy.linalg import norm
 from WALL_CORNERS import WALL_CORNERS
+import pygame
 import time
 
 def rand_vel0(robot):
@@ -9,7 +10,7 @@ def rand_vel0(robot):
     values, so that the robot starts moving in a different direction at the
     same speed in each run of the simulation
     """
-    MAX_SPEED = 100        #pixels per frame
+    MAX_SPEED = 100        # Increases the possibility of choosing a different direction
     
     x_speed = np.random.random()*MAX_SPEED*2 - MAX_SPEED
     if np.random.random() < 0.5:
@@ -93,32 +94,6 @@ def detect_line_collision(rob_coordinates, wall_corners, rob_radius):
     # return [collision_detected, NormalizedVec2Wall]
     return [collision_detected, NormalizedVec2Wall, d]
 
-
-# def collision_scan(wall_corners, rob_coordinates, rob_radius, robot, verbose = False):
-    """
-    This function will iterate, at each frame, over all the corners that
-    define the walls of the room and obstacles in order to check if a
-    collision between the robot and a wall has ocurred.
-    Wall_corners    is an array that contains the coordinates of every
-                    corner in the room
-    rob_coordinates is a tuple that contains the robot's position
-    rob_radius      is a scalar defining the radius of the robot
-    """
-    counter = 0
-    for i in range(0, len(wall_corners)-1):
-        collision_detected, NormalizedVec2Wall = detect_line_collision(rob_coordinates, (wall_corners[i], wall_corners[i+1]), rob_radius)
-        print(type(collision_detected))
-        if collision_detected:
-            if verbose:
-                print("Line segment collided:", i+1, NormalizedVec2Wall)
-            return [collision_detected, NormalizedVec2Wall]
-        else:
-            counter += 1
-            if counter > 10:
-                robot.recent_collision = False
-                counter = 0
-    return [collision_detected, NormalizedVec2Wall]
-
 rec_col_counter = 0
 
 def collision_scan(wall_corners, rob_coordinates, rob_radius, robot, verbose = False):
@@ -156,6 +131,7 @@ def collision_scan(wall_corners, rob_coordinates, rob_radius, robot, verbose = F
                 print(distances[min_dist_index-1: min_dist_index+2])
             print(rob_coordinates, robot.x_vel, robot.y_vel, "\n")
         return [collision_detected, NormalizedVec2Wall]
+    # To implement collision detection tolerance <-- if a collision is detected recently, then do not trigger collision_detected 
     else:
         rec_col_counter += 1
         if rec_col_counter > 1:
@@ -182,6 +158,21 @@ def robot_collision_handler(robot,NormalizedVec2Wall):
     robot.x_vel = new_direction[0]
     robot.y_vel = new_direction[1]
     robot.recent_collision = True
+
+def cleaning_percentage(win, initial_red_pixels, verbose = False):
+    green_pixels = 0
+    imgdata = pygame.surfarray.array3d(win)
+    imgdata = np.array(imgdata)
+    green_pixels = np.count_nonzero(imgdata[30:743,54:640,:] == (69, 245, 99))
+    clean_percentage = green_pixels/initial_red_pixels * 100
+    if verbose:
+        print("Total red pixels: " + str(initial_red_pixels))
+        print("Total green pixels: " + str(green_pixels))
+        print("Clean percentage: " + str(clean_percentage))
+
+    return clean_percentage
+
+
 
     
     
