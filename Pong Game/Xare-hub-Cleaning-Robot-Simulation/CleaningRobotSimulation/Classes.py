@@ -2,6 +2,7 @@ import pygame
 
 WHITE = (255,255,255)
 BLACK = (0,0,0)
+LIGHT_GREEN = (69, 245, 99)
 
 
 class Rect:
@@ -28,7 +29,8 @@ class Line:
 
 class Robot:
     MAX_VEL = 5
-    COLOR = WHITE
+    EDGE_COLOR = LIGHT_GREEN
+    ROBOT_COLOR = WHITE 
 
     def __init__(self, x_center, y_center, radius):
         self.x_center = x_center
@@ -39,17 +41,17 @@ class Robot:
         self.recent_collision = False
 
     def draw(self, win):
-        pygame.draw.circle(win, self.COLOR, (self.x_center, self.y_center), self.radius)
+        pygame.draw.circle(win, self.ROBOT_COLOR, (self.x_center, self.y_center), self.radius)
+        pygame.draw.circle(win, self.EDGE_COLOR, (self.x_center, self.y_center), self.radius, 2)
+        
 
     def move(self):
         self.x_center += self.x_vel
         self.y_center += self.y_vel
 
-def draw(win, borders, lines, robot):
-    win.fill(BLACK)
-    
-    for border in borders:
-        border.draw(win)
+
+def draw(win, lines, robot):
+    # win.fill(BLACK)
 
     for line in lines:
         line.draw(win)

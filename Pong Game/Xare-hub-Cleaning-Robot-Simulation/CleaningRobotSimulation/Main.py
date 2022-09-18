@@ -1,8 +1,9 @@
+from pathlib import Path
 import numpy as np
 import pygame
 from WALL_CORNERS import WALL_CORNERS
 from helper_functions import rand_vel0, collision_scan, robot_collision_handler
-from Classes import Line, Robot, Rect, draw
+from Classes import Line, Robot, Rect, draw, WHITE
 
 
 pygame.init()
@@ -11,22 +12,18 @@ WIDTH, HEIGHT = 800, 800
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Rotated Rectangle")
 
-FPS = 800
+FPS = 500
 
 lines = [Line] * 24
-#Added comment
-# Added second comment
 
 def main():
     run = True
     clock = pygame.time.Clock()
-    _ = []
-    Border = Rect(10, 10, 780, 780)
-    
-    lines = [Line(WALL_CORNERS[i], WALL_CORNERS[i+1]) for i in range(0, len(WALL_CORNERS)-1)]
 
+    lines = [Line(WALL_CORNERS[i], WALL_CORNERS[i+1]) for i in range(0, len(WALL_CORNERS)-1)]
+    
     robot = Robot(154, 141, 15)
-    rand_vel0(robot) # comment this line to return to random direction each run
+    rand_vel0(robot)                                        # comment this line to return to random direction each run
     
     # uncomment next lines to define a normalized specific direction for the robot
 
@@ -40,14 +37,17 @@ def main():
     # robot.x_vel = vel[0]
     # robot.y_vel = vel[1]
 
-    while run:
-        clock.tick(FPS)
-        draw(WIN, [Border], lines, robot)
+    background = pygame.image.load("Pong Game/Xare-hub-Cleaning-Robot-Simulation/CleaningRobotSimulation/room.png")
+    WIN.blit(background, (0,0))
 
+    while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 break
+
+        # pygame.display.flip()
+        # WIN.blit(background, (0,0))
 
         robot.move()
         collision_detected, Normal_vector = collision_scan(WALL_CORNERS, (robot.x_center, robot.y_center), robot.radius, robot, verbose = True)
@@ -55,6 +55,9 @@ def main():
 
         if collision_detected and not(robot.recent_collision):
             robot_collision_handler(robot, Normal_vector)
+
+        draw(WIN, lines, robot)
+        clock.tick(FPS)
 
     
     pygame.quit()
