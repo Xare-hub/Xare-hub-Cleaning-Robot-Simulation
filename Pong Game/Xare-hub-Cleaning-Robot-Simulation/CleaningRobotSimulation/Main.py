@@ -28,13 +28,13 @@ def main():
     lines = [Line(WALL_CORNERS[i], WALL_CORNERS[i+1]) for i in range(0, len(WALL_CORNERS)-1)]
     
     robot = Robot(629, 238, 15)
-    rand_vel0(robot)                                        # comment this line to return to random direction each run
-    initial_direction = [robot.x_vel, robot.y_vel]
+    # rand_vel0(robot)                                        # comment this line to return to random direction each run
+    # initial_direction = [robot.x_vel, robot.y_vel]
     
     # uncomment next lines to define a normalized specific direction for the robot
-    # robot.x_vel = -0.422
-    # robot.y_vel = -0.263
-    # initial_direction = [robot.x_vel, robot.y_vel]
+    robot.x_vel = -0.42
+    robot.y_vel = -0.26
+    initial_direction = [robot.x_vel, robot.y_vel]
 
     # uncomment next lines to define a specific direction in terms of the x and y vel components:
     # robot.x_vel = vel[0]
@@ -74,7 +74,7 @@ def main():
         
         counter += 1
         if counter % 1000 == 0:
-            cln_perc = cleaning_percentage(WIN, total_red_pixels)           
+            cln_perc = cleaning_percentage(WIN, total_red_pixels, verbose=True)           
         
         if cln_perc >= 90:
             break

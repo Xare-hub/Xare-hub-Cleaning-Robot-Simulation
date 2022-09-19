@@ -138,9 +138,9 @@ def collision_scan(wall_corners, rob_coordinates, rob_radius, robot, verbose = F
             counter = 0
     return [collision_detected, NormalizedVec2Wall]
         
-RAND_ANGLE = 10
+RAND_ANGLE = 5
 
-def robot_collision_handler(robot,NormalizedVec2Wall, rand_angle = False):
+def robot_collision_handler(robot,NormalizedVec2Wall, rand_angle = False, verbose = False):
     """
     This function receives a robot object as an input, and is in charge of
     determining where the robot will go after colliding with a wall. The 
@@ -159,14 +159,16 @@ def robot_collision_handler(robot,NormalizedVec2Wall, rand_angle = False):
 
     if rand_angle:
         theta = np.arctan2(new_direction[1], new_direction[0])
-        print("Theta is: " + str(theta))
+        if verbose:
+            print("Theta is: " + str(theta))
         if np.random.random() > 0.5:
             new_theta = theta + RAND_ANGLE*pi/180
         else:
             new_theta = theta - RAND_ANGLE*pi/180
         
         new_direction = [np.cos(new_theta), np.sin(new_theta)]
-        print("New direction with random angle change is: ", new_direction)
+        if verbose:
+            print("New direction with random angle change is: ", new_direction)
 
 
     robot.x_vel = new_direction[0]*0.5
