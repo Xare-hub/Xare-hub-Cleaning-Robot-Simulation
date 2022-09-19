@@ -187,8 +187,8 @@ def cleaning_percentage(win, initial_red_pixels, verbose = False):
     green_pixels = np.count_nonzero(imgdata[30:743,54:640,:] == (69, 245, 99))
     clean_percentage = green_pixels/initial_red_pixels * 100
     if verbose:
-        print("Total red pixels: " + str(initial_red_pixels))
-        print("Total green pixels: " + str(green_pixels))
+        # print("Total red pixels: " + str(initial_red_pixels))
+        # print("Total green pixels: " + str(green_pixels))
         print("Clean percentage: " + str(clean_percentage))
 
     return clean_percentage

@@ -74,7 +74,7 @@ def main():
         
         counter += 1
         if counter % 1000 == 0:
-            cln_perc = cleaning_percentage(WIN, total_red_pixels, verbose=False)           
+            cln_perc = cleaning_percentage(WIN, total_red_pixels, verbose=True)           
         
         if cln_perc >= 90:
             break
