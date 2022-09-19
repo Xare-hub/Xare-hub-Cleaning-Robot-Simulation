@@ -12,13 +12,14 @@ WIDTH, HEIGHT = 800, 800
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Rotated Rectangle")
 
-FPS = 500
+FPS = 400
 
 # Initialize the list of vectors with line objects
 lines = [Line] * 24
 
 #Create list to store the fps at each frame
 fps_list = []
+clock_simulation = pygame.time.Clock()
 
 def main():
     run = True
@@ -26,20 +27,20 @@ def main():
 
     lines = [Line(WALL_CORNERS[i], WALL_CORNERS[i+1]) for i in range(0, len(WALL_CORNERS)-1)]
     
-    robot = Robot(353, 475, 15)
+    robot = Robot(629, 238, 15)
     rand_vel0(robot)                                        # comment this line to return to random direction each run
+    initial_direction = [robot.x_vel, robot.y_vel]
     
     # uncomment next lines to define a normalized specific direction for the robot
-
-    # direction = [-5,5]  #set fixed initial direction
-    # f = 2   # change to modify pixels traveled per frame
-    # vel = direction/np.linalg.norm(direction)   # get unitary vector with the direction chose   
-    # robot.x_vel = vel[0]
-    # robot.y_vel = vel[1]
+    # robot.x_vel = -0.422
+    # robot.y_vel = -0.263
+    # initial_direction = [robot.x_vel, robot.y_vel]
 
     # uncomment next lines to define a specific direction in terms of the x and y vel components:
     # robot.x_vel = vel[0]
     # robot.y_vel = vel[1]
+
+    
 
     # Load room image to background
     background = pygame.image.load("Pong Game/Xare-hub-Cleaning-Robot-Simulation/CleaningRobotSimulation/room.png")
@@ -66,23 +67,29 @@ def main():
 
 
         if collision_detected and not(robot.recent_collision):
-            robot_collision_handler(robot, Normal_vector)
+            robot_collision_handler(robot, Normal_vector, rand_angle=True)
 
         draw(WIN, lines, robot)
 
         
         counter += 1
         if counter % 1000 == 0:
-            cln_perc = cleaning_percentage(WIN, total_red_pixels, True)
-
-        fps_list.append(clock.get_fps())
-        clock.tick(FPS)
-
+            cln_perc = cleaning_percentage(WIN, total_red_pixels)           
+        
         if cln_perc >= 90:
             break
+        
+        fps_list.append(clock.get_fps())
+        clock.tick(FPS)
+    
+    clock_simulation.tick()
 
+    simulation_time = clock_simulation.get_time()
+    print("Simulation time: " + str(simulation_time/1000) + " seconds")
+    print("Initial robot direction: ({:.4f}, {:.4f})".format(initial_direction[0], initial_direction[1]) )
     
     pygame.quit()
+
     print("Avergae fps: " + str(np.average(fps_list)))
 
 

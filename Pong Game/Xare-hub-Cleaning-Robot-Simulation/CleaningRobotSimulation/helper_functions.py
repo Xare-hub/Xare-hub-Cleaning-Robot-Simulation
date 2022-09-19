@@ -1,3 +1,4 @@
+from cmath import pi
 import numpy as np
 from numpy.linalg import norm
 from WALL_CORNERS import WALL_CORNERS
@@ -10,16 +11,14 @@ def rand_vel0(robot):
     values, so that the robot starts moving in a different direction at the
     same speed in each run of the simulation
     """
-    MAX_SPEED = 100        # Increases the possibility of choosing a different direction
+    angle = np.random.random()*pi        # Increases the possibility of choosing a different direction
     
-    x_speed = np.random.random()*MAX_SPEED*2 - MAX_SPEED
-    if np.random.random() < 0.5:
-        y_speed = np.sqrt(MAX_SPEED**2 - x_speed**2)
-    else:
-        y_speed = np.sqrt(MAX_SPEED**2 - x_speed**2) * -1
-    vel = [x_speed, y_speed]/norm([x_speed, y_speed])
-    robot.x_vel = vel[0]/2
-    robot.y_vel = vel[1]/2
+    x_speed = np.cos(angle)
+    y_speed = np.sin(angle)
+    
+    #Produces unitary vector for a random direction. each pixel equals 1 squared centimeter
+    robot.x_vel = x_speed*0.5
+    robot.y_vel = y_speed*0.5
 
 def dist_point2line(P1,P2, P3, verbose = False):
     """
@@ -139,8 +138,9 @@ def collision_scan(wall_corners, rob_coordinates, rob_radius, robot, verbose = F
             counter = 0
     return [collision_detected, NormalizedVec2Wall]
         
+RAND_ANGLE = 10
 
-def robot_collision_handler(robot,NormalizedVec2Wall):
+def robot_collision_handler(robot,NormalizedVec2Wall, rand_angle = False):
     """
     This function receives a robot object as an input, and is in charge of
     determining where the robot will go after colliding with a wall. The 
@@ -155,8 +155,22 @@ def robot_collision_handler(robot,NormalizedVec2Wall):
     NormalizedVec2Wall = np.array(NormalizedVec2Wall)
     old_direction = np.array((robot.x_vel, robot.y_vel))
     new_direction = old_direction - 2*np.dot(old_direction, NormalizedVec2Wall)*NormalizedVec2Wall
-    robot.x_vel = new_direction[0]
-    robot.y_vel = new_direction[1]
+    print("New direction is: ", new_direction)
+
+    if rand_angle:
+        theta = np.arctan2(new_direction[1], new_direction[0])
+        print("Theta is: " + str(theta))
+        if np.random.random() > 0.5:
+            new_theta = theta + RAND_ANGLE*pi/180
+        else:
+            new_theta = theta - RAND_ANGLE*pi/180
+        
+        new_direction = [np.cos(new_theta), np.sin(new_theta)]
+        print("New direction with random angle change is: ", new_direction)
+
+
+    robot.x_vel = new_direction[0]*0.5
+    robot.y_vel = new_direction[1]*0.5
     robot.recent_collision = True
 
 def cleaning_percentage(win, initial_red_pixels, verbose = False):
