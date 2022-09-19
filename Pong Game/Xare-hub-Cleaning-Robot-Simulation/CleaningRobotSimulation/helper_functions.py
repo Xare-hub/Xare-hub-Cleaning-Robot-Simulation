@@ -169,6 +169,7 @@ def robot_collision_handler(robot,NormalizedVec2Wall, rand_angle = False, verbos
         new_direction = [np.cos(new_theta), np.sin(new_theta)]
         if verbose:
             print("New direction with random angle change is: ", new_direction)
+        # Multiply by the same factor that is used in rand_vel0 to get consistent velocities after collisions
         robot.x_vel = new_direction[0]*0.5
         robot.y_vel = new_direction[1]*0.5
         return
