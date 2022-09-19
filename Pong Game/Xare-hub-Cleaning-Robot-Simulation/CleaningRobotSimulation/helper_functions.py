@@ -155,7 +155,8 @@ def robot_collision_handler(robot,NormalizedVec2Wall, rand_angle = False, verbos
     NormalizedVec2Wall = np.array(NormalizedVec2Wall)
     old_direction = np.array((robot.x_vel, robot.y_vel))
     new_direction = old_direction - 2*np.dot(old_direction, NormalizedVec2Wall)*NormalizedVec2Wall
-    print("New direction is: ", new_direction)
+    if verbose:
+        print("New direction is: ", new_direction)
 
     if rand_angle:
         theta = np.arctan2(new_direction[1], new_direction[0])
