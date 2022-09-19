@@ -169,10 +169,13 @@ def robot_collision_handler(robot,NormalizedVec2Wall, rand_angle = False, verbos
         new_direction = [np.cos(new_theta), np.sin(new_theta)]
         if verbose:
             print("New direction with random angle change is: ", new_direction)
+        robot.x_vel = new_direction[0]*0.5
+        robot.y_vel = new_direction[1]*0.5
+        return
 
 
-    robot.x_vel = new_direction[0]*0.5
-    robot.y_vel = new_direction[1]*0.5
+    robot.x_vel = new_direction[0]
+    robot.y_vel = new_direction[1]
     robot.recent_collision = True
 
 def cleaning_percentage(win, initial_red_pixels, verbose = False):

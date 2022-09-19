@@ -67,7 +67,7 @@ def main():
 
 
         if collision_detected and not(robot.recent_collision):
-            robot_collision_handler(robot, Normal_vector, rand_angle=True)
+            robot_collision_handler(robot, Normal_vector, rand_angle=False)
 
         draw(WIN, lines, robot)
 
