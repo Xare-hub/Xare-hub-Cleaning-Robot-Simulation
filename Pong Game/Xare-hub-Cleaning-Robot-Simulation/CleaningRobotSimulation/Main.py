@@ -32,8 +32,8 @@ def main():
     # initial_direction = [robot.x_vel, robot.y_vel]
     
     # uncomment next lines to define a normalized specific direction for the robot
-    robot.x_vel = -0.42
-    robot.y_vel = -0.26
+    robot.x_vel = -0.422
+    robot.y_vel = -0.263
     initial_direction = [robot.x_vel, robot.y_vel]
 
     # uncomment next lines to define a specific direction in terms of the x and y vel components:
